@@ -7,34 +7,25 @@ import {
     TouchableOpacity,
     StyleSheet
 } from "react-native";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "@/app/AuthContext";
 
-function Register({ navigation }) {
-    const { register } = useAuth();
-    const [fullName, setFullName] = useState("");
+function Login({ navigation }) {
+    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleRegister = () => {
-        if (fullName === "" || email === "" || password === "") {
+    const handleLogin = () => {
+        if (email === "" || password === "") {
             alert("Пожалуйста, заполните все поля.");
             return;
         }
-        register({ fullName, email, password });
-        // После регистрации состояние `authorized` изменится, и `RootNavigator` покажет `MainTabs`
+        login({ email, password });
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.formCard}>
-                <Text style={styles.title}>Регистрация</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Полное имя"
-                    placeholderTextColor="#aaa"
-                    value={fullName}
-                    onChangeText={setFullName}
-                />
+                <Text style={styles.title}>Вход</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Email"
@@ -52,14 +43,14 @@ function Register({ navigation }) {
                     onChangeText={setPassword}
                 />
 
-                <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonText}>Зарегистрироваться</Text>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                    <Text style={styles.buttonText}>Войти</Text>
                 </TouchableOpacity>
 
                 <View style={styles.footer}>
-                    <Text style={styles.footerText}>Уже есть аккаунт?</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                        <Text style={styles.link}>Войти</Text>
+                    <Text style={styles.footerText}>Нет аккаунта?</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+                        <Text style={styles.link}>Зарегистрироваться</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -67,7 +58,7 @@ function Register({ navigation }) {
     );
 }
 
-export default Register;
+export default Login;
 
 const styles = StyleSheet.create({
     container: {

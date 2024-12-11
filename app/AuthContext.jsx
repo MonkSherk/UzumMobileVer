@@ -1,11 +1,10 @@
-// app/authContext.js
 import React, { createContext, useState, useContext } from "react";
 
 const usersDB = {
-    "Test@mail.ru": {
-        fullName: "Test",
+    "ivan@example.com": {
+        fullName: "Иван Иванов",
         password: "123456",
-        token: "token",
+        token: "fake_jwt_token_ivan",
     },
 };
 
@@ -16,7 +15,7 @@ const AuthContext = createContext({
     login: () => {},
     logout: () => {},
     register: () => {},
-    checkUserExists: () => false,
+    updateProfile: () => {},
 });
 
 export function AuthProvider({ children }) {
@@ -39,7 +38,6 @@ export function AuthProvider({ children }) {
 
     const register = ({ fullName, email, password }) => {
         if (usersDB[email]) {
-            // Пользователь уже существует
             setAuthorized(false);
             alert("Пользователь с таким email уже существует.");
             return;
@@ -58,8 +56,32 @@ export function AuthProvider({ children }) {
         setAuthorized(false);
     };
 
-    const checkUserExists = () => {
-        return user !== null;
+    const updateProfile = ({ fullName, email }) => {
+        if (!user) {
+            alert("Пользователь не авторизован.");
+            return;
+        }
+
+        const oldEmail = user.email;
+        if (email !== oldEmail) {
+            if (usersDB[email]) {
+                alert("Пользователь с таким email уже существует.");
+                return;
+            }
+            const oldUserData = usersDB[oldEmail];
+            delete usersDB[oldEmail];
+            usersDB[email] = {
+                ...oldUserData,
+                fullName,
+            };
+            setUser({ email, fullName });
+            setAuthorized(true);
+            alert("Профиль обновлён успешно!");
+        } else {
+            usersDB[email].fullName = fullName;
+            setUser({ email, fullName });
+            alert("Профиль обновлён успешно!");
+        }
     };
 
     return (
@@ -71,7 +93,7 @@ export function AuthProvider({ children }) {
                 login,
                 logout,
                 register,
-                checkUserExists,
+                updateProfile,
             }}
         >
             {children}

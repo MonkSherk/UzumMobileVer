@@ -4,13 +4,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { useAuth } from "./AuthContext";
-import Basket from "./Basket/Basket";
-import ProfileStack from "./ProfileStack/ProfileStack";
-import Main from "./Home/Main";
-import Search from "./Search/Search";
+
 
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Favorites from "@/app/Favorites/Favorities";
+import Basket from "@/app/Components/Basket/Basket";
+import ProfileStack from "@/app/Components/ProfileStack/ProfileStack";
+import Favorites from "@/app/Components/Favorites/Favorities";
+import Main from "@/app/Components/Home/Main";
+import Search from "@/app/Components/Search/Search";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -105,7 +107,7 @@ export default function MainTabs() {
                 name="Favorites"
                 component={Favorites}
                 options={{
-                    tabBarButton: () => null, // скрываем из нижней навигации, если не нужно
+                    tabBarButton: () => null,
                 }}
             />
         </Tab.Navigator>

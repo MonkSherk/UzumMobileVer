@@ -1,9 +1,10 @@
-
+// app/ProfileStack/ProfileStack.jsx
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import Profile from "@/app/Profile/Profile";
-import Settings from "@/app/SettingsPage/SettingsPage";
-import ActiveOrders from "@/app/ActiveOrders/ActiveOrdersPage";
+import Profile from "../Profile/Profile";
+import Settings from "../SettingsPage/SettingsPage";
+import ActiveOrders from "../ActiveOrders/ActiveOrdersPage";
+
 const Stack = createStackNavigator();
 
 function ProfileStack() {

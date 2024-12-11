@@ -1,14 +1,18 @@
-
+// app/Profile/Profile.jsx
 import React from "react";
 import {
     Text,
-    View,
-    TouchableOpacity,
     Image,
     StyleSheet,
     FlatList,
+    View
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
+import { useAuth } from "@/app/AuthContext";
+import Animated, { Layout } from 'react-native-reanimated';
+import { useFadeIn } from "../hooks/useFadeIn";
+import { MenuItemComponent } from "../MenuItemComponent/MenuItemComponent";
+import { usePulseAnimation } from "../hooks/usePulseAnimation";
+import { useInfiniteRotation } from "../hooks/useInfiniteRotation";
 
 const menuItems = [
     {
@@ -31,41 +35,50 @@ const menuItems = [
     },
 ];
 
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(require('react-native').TouchableOpacity);
+
 function Profile({ navigation }) {
-    const user = {
-        avatar: "https://via.placeholder.com/100",
-        fullName: "Фамилия Имя",
-        email: "email@example.com",
+    const { user } = useAuth();
+    const fadeInStyle = useFadeIn();
+
+    const avatarPulseStyle = usePulseAnimation(1, 1.3, 1500);
+
+    const editButtonRotation = useInfiniteRotation(3000);
+
+    if (!user) {
+        return (
+            <Animated.View style={[styles.container, fadeInStyle]}>
+                <Text style={styles.text}>Вы не авторизованы. Пожалуйста, войдите или зарегистрируйтесь.</Text>
+            </Animated.View>
+        );
+    }
+
+    const renderMenuItem = ({ item }) => {
+        return <MenuItemComponent item={item} navigation={navigation} />;
     };
 
-    const renderMenuItem = ({ item }) => (
-        <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => navigation.navigate(item.navigateTo)}
-        >
-            <View style={styles.menuItemContent}>
-                <Icon name={item.icon} size={24} color="#ff6b81" />
-                <Text style={styles.menuItemText}>{item.title}</Text>
-            </View>
-            <Icon name="chevron-forward" size={20} color="#ccc" />
-        </TouchableOpacity>
-    );
-
     return (
-        <View style={styles.container}>
-            <View style={styles.profileSection}>
-                <Image source={{ uri: user.avatar }} style={styles.avatar} />
+        <Animated.View style={[styles.container, fadeInStyle]}>
+            <Animated.View style={styles.profileSection} layout={Layout.springify()}>
+                <Animated.View style={avatarPulseStyle}>
+                    <Image
+                        source={{ uri: user.avatar || "https://via.placeholder.com/100" }}
+                        style={styles.avatar}
+                    />
+                </Animated.View>
                 <View style={styles.userInfo}>
                     <Text style={styles.fullName}>{user.fullName}</Text>
                     <Text style={styles.email}>{user.email}</Text>
                 </View>
-                <TouchableOpacity
-                    style={styles.editButton}
+                <AnimatedTouchableOpacity
+                    style={[styles.editButton, editButtonRotation]}
                     onPress={() => navigation.navigate("Settings")}
+                    activeOpacity={0.9}
+                    layout={Layout.springify()}
                 >
-                    <Icon name="create-outline" size={20} color="#fff" />
-                </TouchableOpacity>
-            </View>
+                    <Text style={{color: '#fff', fontWeight:'700'}}>✏️</Text>
+                </AnimatedTouchableOpacity>
+            </Animated.View>
 
             <FlatList
                 data={menuItems}
@@ -73,7 +86,7 @@ function Profile({ navigation }) {
                 renderItem={renderMenuItem}
                 contentContainerStyle={styles.menuList}
             />
-        </View>
+        </Animated.View>
     );
 }
 
@@ -91,12 +104,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffff",
         padding: 16,
         borderRadius: 10,
+        marginBottom: 24,
+        position: "relative",
         shadowColor: "#000",
         shadowOpacity: 0.05,
         shadowRadius: 3,
         elevation: 2,
-        marginBottom: 24,
-        position: "relative",
     },
     avatar: {
         width: 80,
@@ -129,30 +142,11 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 3,
     },
-    menuList: {
-        // Дополнительные отступы, если нужно
-    },
-    menuItem: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: "#ffffff",
-        padding: 16,
-        borderRadius: 10,
-        marginBottom: 12,
-        shadowColor: "#000",
-        shadowOpacity: 0.05,
-        shadowRadius: 3,
-        elevation: 2,
-    },
-    menuItemContent: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    menuItemText: {
-        fontSize: 16,
-        fontWeight: "600",
+    menuList: {},
+    text: {
+        fontSize: 18,
         color: "#333",
-        marginLeft: 12,
+        textAlign: "center",
+        marginTop: 20,
     },
 });
